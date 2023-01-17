@@ -2,12 +2,15 @@ package main.service;
 
 import main.dto.BookDto;
 import main.dto.UserDto;
+import main.entity.BookDetails;
+import main.entity.CategoryType;
 import main.entity.StatusType;
 import main.entity.Book;
 import main.exception.AlreadyOnDbException;
 import main.exception.NotEnoughResources;
 import main.exception.NotFoundException;
 import main.mapper.BookMapper;
+import main.repository.BookDetailsRepository;
 import main.repository.BookRepository;
 import main.utils.BookMocks;
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,8 @@ public class BookServiceTest {
 
     @Mock
     private BookRepository bookRepository;
+    @Mock
+    private BookDetailsRepository bookDetailsRepository;
 
     @Mock
     private BookMapper bookMapper;
@@ -44,14 +49,21 @@ public class BookServiceTest {
         // Arrange
         book = BookMocks.mockBook();
         bookDto = BookMocks.mockBookDto();
+        BookDetails bookDetails = BookDetails.builder()
+                .part(1)
+                .categoryTpe(CategoryType.FICTION)
+                .isbn("ISBN-10- 0-596-52068-3")
+                .price(14.59F)
+                .build();
 
         // Act
         when(bookRepository.findByTitle(bookDto.getTitle())).thenReturn(Optional.empty());
         when(bookRepository.save(book)).thenReturn(book);
+        when(bookDetailsRepository.findById(1L)).thenReturn(Optional.of(bookDetails));
         when(bookMapper.mapToBookDto(book)).thenReturn(bookDto);
         when(bookMapper.mapToBook(bookDto)).thenReturn(book);
 
-        BookDto result = bookService.addBook(bookDto);
+        BookDto result = bookService.addBook(bookDto, 1L);
 
         // Assert
 
@@ -70,7 +82,7 @@ public class BookServiceTest {
         when(bookRepository.findByTitle(bookDto.getTitle())).thenReturn(Optional.of(book));
 
         AlreadyOnDbException alreadyOnDbException =
-                assertThrows(AlreadyOnDbException.class , () -> bookService.addBook(bookDto));
+                assertThrows(AlreadyOnDbException.class , () -> bookService.addBook(bookDto,1L));
 
         // Assert
         assertEquals("A book with same title " + bookDto.getTitle() + " already exists", alreadyOnDbException.getMessage());

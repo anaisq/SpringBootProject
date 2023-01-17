@@ -32,14 +32,14 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user_details")
-    @JsonManagedReference
+    //@JsonManagedReference
     private UserDetails userDetails;
 
     @ManyToMany()
     @JoinTable(name = "user_books",
     joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
     inverseJoinColumns = @JoinColumn(name = "id_book", referencedColumnName = "id"))
-    @JsonManagedReference
+    //@JsonManagedReference
     private List<Book> books;
 
 }

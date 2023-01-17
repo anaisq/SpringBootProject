@@ -45,6 +45,6 @@ public class UserDetails {
     private String phoneNumber;
 
     @OneToOne(mappedBy = "userDetails")
-    @JsonBackReference
+    // @JsonBackReference
     private User user;
 }

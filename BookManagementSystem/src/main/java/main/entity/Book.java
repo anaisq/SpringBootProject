@@ -40,6 +40,6 @@ public class Book {
     private BookDetails bookDetails;
 
     @ManyToMany(mappedBy = "books")
-    @JsonBackReference
+    //@JsonBackReference
     private List<User> users;
 }

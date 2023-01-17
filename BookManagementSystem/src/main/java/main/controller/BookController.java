@@ -35,9 +35,9 @@ public class BookController {
 //        return bookService.getBookByRoleAndStatus(role, status);
 //    }
 
-    @PostMapping
-    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto){
-        return ResponseEntity.ok(bookService.addBook(bookDto));
+    @PostMapping("/{idBookDetails}")
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto, @PathVariable Long idBookDetails){
+        return ResponseEntity.ok(bookService.addBook(bookDto, idBookDetails));
     }
 
     @DeleteMapping("/{id}")

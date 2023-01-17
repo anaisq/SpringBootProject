@@ -1,6 +1,7 @@
 package main.service;
 
 import main.dto.BookDto;
+import main.entity.BookDetails;
 import main.entity.RoleType;
 import main.entity.StatusType;
 import main.entity.Book;
@@ -8,6 +9,7 @@ import main.exception.AlreadyOnDbException;
 import main.exception.NotEnoughResources;
 import main.exception.NotFoundException;
 import main.mapper.BookMapper;
+import main.repository.BookDetailsRepository;
 import main.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +27,18 @@ public class BookService {
     @Autowired
     private BookMapper bookMapper;
 
-    public BookDto addBook(BookDto bookDto) {
+    @Autowired
+    private BookDetailsRepository bookDetailsRepository;
+
+    public BookDto addBook(BookDto bookDto, Long idBookDetails) {
         Optional<Book> existingBookname = bookRepository.findByTitle(bookDto.getTitle());
         existingBookname.ifPresent(e -> {
             throw new AlreadyOnDbException("A book with same title " + bookDto.getTitle() + " already exists");
         } );
-        return bookMapper.mapToBookDto(bookRepository.save(bookMapper.mapToBook(bookDto)));
+        BookDetails bookDetails = bookDetailsRepository.findById(idBookDetails).orElseThrow(RuntimeException::new);
+        Book book = bookMapper.mapToBook(bookDto);
+        book.setBookDetails(bookDetails);
+        return bookMapper.mapToBookDto(bookRepository.save(book));
     }
 
     public List<BookDto> getBooks(){
