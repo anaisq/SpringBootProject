@@ -1,29 +1,43 @@
 package main.exception.advice;
 
-import jakarta.persistence.EntityNotFoundException;
-import main.exception.UserAlreadyOnDbException;
-import main.exception.UserNotFoundException;
+import main.exception.AlreadyOnDbException;
+import main.exception.NotAllowed;
+import main.exception.NotEnoughResources;
+import main.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice {
 
-    @ExceptionHandler({UserNotFoundException.class, EntityNotFoundException.class})
-    public ResponseEntity<String > handleUserNotFound(Exception exception){
+    @ExceptionHandler({NotFoundException.class, EntityNotFoundException.class})
+    public ResponseEntity<String > handleNotFound(Exception exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(exception.getMessage() + " at " + LocalDateTime.now());
     }
 
-    @ExceptionHandler(UserAlreadyOnDbException.class)
-    public ResponseEntity<String> handleUserAlreadyOnDb(Exception exception){
+    @ExceptionHandler(AlreadyOnDbException.class)
+    public ResponseEntity<String> handleAlreadyOnDb(Exception exception){
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughResources.class)
+    public ResponseEntity<String> handleNotEnoughResources(Exception exception){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotAllowed.class)
+    public ResponseEntity<String> handleNotAllowed(Exception exception){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(exception.getMessage());
     }
 

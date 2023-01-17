@@ -21,8 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     //2. JPQL - queries on entities
-    @Query("SELECT u FROM User u WHERE u.status = :status AND u.lastName = :lastName")
-    List<User> getUserByStatusAndLastName(String status, String lastName);
+//    @Query("SELECT u FROM User u WHERE u.status = :status AND u.lastName = :lastName")
+//    List<User> getUserByStatusAndLastName(String status, String lastName);
 
     //3. native query
 //    @Query(nativeQuery = true,
