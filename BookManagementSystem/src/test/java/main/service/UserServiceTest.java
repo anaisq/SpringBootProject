@@ -1,11 +1,13 @@
 package main.service;
 
 import main.dto.UserDto;
+import main.entity.Audit;
 import main.entity.StatusType;
 import main.entity.User;
 import main.exception.AlreadyOnDbException;
 import main.exception.NotFoundException;
 import main.mapper.UserMapper;
+import main.repository.AuditRepository;
 import main.repository.UserRepository;
 import main.utils.UsersMocks;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -30,6 +34,9 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private AuditRepository auditRepository;
+
+    @Mock
     private UserMapper userMapper;
 
     private User user;
@@ -40,12 +47,14 @@ public class UserServiceTest {
         // Arrange
         user = UsersMocks.mockUser();
         userDto = UsersMocks.mockUserDto();
+        // Audit audit = new Audit("addUser", new Timestamp(System.currentTimeMillis()) );
 
         // Act
         when(userRepository.findByUsername(userDto.getUsername())).thenReturn(Optional.empty());
         when(userRepository.save(user)).thenReturn(user);
         when(userMapper.mapToUserDto(user)).thenReturn(userDto);
         when(userMapper.mapToUser(userDto)).thenReturn(user);
+        // when(auditRepository.save(audit)).thenReturn(Optional.empty());
 
         UserDto result = userService.addUser(userDto);
 

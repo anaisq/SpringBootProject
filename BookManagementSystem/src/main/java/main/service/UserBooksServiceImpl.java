@@ -44,10 +44,10 @@ public class UserBooksServiceImpl implements UserBooksService {
     }
 
     public List<UserBooks> getById(Long id) {
-//        Optional<User> user = userRepository.findById(id);
-//        if(user.isEmpty()) {
-//            throw new NotFoundException("User with id " + id + " does not exist");
-//        }
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new NotFoundException("User with id " + id + " does not exist");
+        }
         List<UserBooks> userBooks = userBooksRepository.findByIdUser(id);
         if(userBooks.isEmpty()) {
             throw new NotFoundException("User with id " + id + " does not have borrowings");

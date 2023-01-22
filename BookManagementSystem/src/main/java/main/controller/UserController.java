@@ -4,15 +4,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import main.dto.UserDto;
+import main.entity.Audit;
 import main.entity.RoleType;
 import main.entity.StatusType;
 import main.entity.User;
 import main.mapper.UserMapper;
+import main.repository.AuditRepository;
 import main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +60,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/{status}")
-    public ResponseEntity<UserDto> updateUsername(@PathVariable Long id, @PathVariable String status){
+    public ResponseEntity<UserDto> updateStatus(@PathVariable Long id, @PathVariable String status){
         return ResponseEntity.ok(userService.updateStatus(id, status));
     }
 

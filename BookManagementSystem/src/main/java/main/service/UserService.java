@@ -1,17 +1,20 @@
 package main.service;
 
 import main.dto.UserDto;
+import main.entity.Audit;
 import main.entity.RoleType;
 import main.entity.StatusType;
 import main.entity.User;
 import main.exception.AlreadyOnDbException;
 import main.exception.NotFoundException;
 import main.mapper.UserMapper;
+import main.repository.AuditRepository;
 import main.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +26,9 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private AuditRepository auditRepository;
+
+    @Autowired
     private UserMapper userMapper;
 
     public UserDto addUser(UserDto userDto) {
@@ -30,12 +36,14 @@ public class UserService {
         existingUsername.ifPresent(e -> {
             throw new AlreadyOnDbException("An user with same username " + userDto.getUsername() + " already exists");
         } );
+        this.auditRepository.save(new Audit("addUser", new Timestamp(System.currentTimeMillis()) ));
         //return userRepository.save(userDto);
         return userMapper.mapToUserDto(userRepository.save(userMapper.mapToUser(userDto)));
     }
 
     public List<UserDto> getUsers(){
         List<User> users = userRepository.findAll();
+        this.auditRepository.save(new Audit("getAll", new Timestamp(System.currentTimeMillis()) ));
         return users.stream()
                 .map(user -> userMapper.mapToUserDto(user))
                 .collect(Collectors.toList());
@@ -46,6 +54,7 @@ public class UserService {
         if(user.isEmpty()) {
             throw new NotFoundException("User with id " + id + "attempted to be retrieved");
         }
+        this.auditRepository.save(new Audit("getById", new Timestamp(System.currentTimeMillis()) ));
         return Optional.of(userMapper.mapToUserDto(user.get()));
     }
 
@@ -54,6 +63,7 @@ public class UserService {
         if(users.isEmpty()) {
             throw new NotFoundException(String.format("No user with role: %s was found", role));
         }
+        this.auditRepository.save(new Audit("getRoleAndStatus", new Timestamp(System.currentTimeMillis()) ));
         return users.stream()
                 .map(user -> userMapper.mapToUserDto(user))
                 .collect(Collectors.toList());
@@ -84,6 +94,8 @@ public class UserService {
             throw new NotFoundException(String.format("No user with username: %s was found", username));
         }
         userRepository.delete(user.get());
+
+        this.auditRepository.save(new Audit("deleteUser", new Timestamp(System.currentTimeMillis()) ));
         return "User: " + username + " was deleted";
     }
 
@@ -106,6 +118,7 @@ public class UserService {
                 throw new NotFoundException("Status not ok");
         }
 
+        this.auditRepository.save(new Audit("getById", new Timestamp(System.currentTimeMillis()) ));
         return userMapper.mapToUserDto(userRepository.save(user.get()));
 
 //        User user = userRepository.getReferenceById(id);
